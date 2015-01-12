@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>商品列表 - Powered By ${systemConfig.systemName}</title>
+<meta name="Author" content="JFinalShop Team" />
+<meta name="Copyright" content="JFinalShop" />
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<%include("/common/include.html"){}%>
+<link href="${base}/template/admin/css/list.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="${base}/template/admin/js/list.js"></script>
+</head>
+<body class="list">
+	<div class="body">
+		<div class="listBar">
+			<h1><span class="icon">&nbsp;</span>商品列表&nbsp;<span class="pageInfo">总记录数: ${pager.totalRow}(共${pager.totalPage}页)</span></h1>
+		</div>
+		<form id="listForm" action="${base}/product/list" method="post">
+			<div class="operateBar">
+				<input type="button" class="addButton" onclick="location.href='${base}/product/add'" value="添加商品" />
+				<label>查找:</label>
+				<select name="pager.property">
+					<option value="name" <%if("${property!}" == "name"){%>selected="selected" <%}%>>
+						商品名称
+					</option>
+					<option value="productSn" <%if ("${property}" == "productSn"){%>selected="selected" <%}%>>
+						货号
+					</option>
+				</select>
+				<label class="searchText"><input type="text" name="keyword" value="${keyword!}" /></label><input type="button" id="searchButton" class="searchButton" value="" />
+				<label>每页显示:</label>
+				<select name="pageSize" id="pageSize">
+					<option value="10" <%if(pager.pageSize == 10){%> selected="selected" <%}%>>
+						10
+					</option>
+					<option value="20" <%if(pager.pageSize == 20){%> selected="selected" <%}%>>
+						20
+					</option>
+					<option value="50" <%if(pager.pageSize == 50){%> selected="selected" <%}%>>
+						50
+					</option>
+					<option value="100" <%if(pager.pageSize == 100){%> selected="selected" <%}%>>
+						100
+					</option>					
+				</select>
+			</div>
+			<table class="listTable">
+				<tr>
+					<th class="check">
+						<input type="checkbox" class="allCheck" />
+					</th>
+					<th>
+						<span class="sort" name="name">商品名称</span>
+					</th>
+					<th>
+						<span class="sort" name="productSn">货号</span>
+					</th>
+					<th>
+						<span class="sort" name="productCategory">分类</span>
+					</th>
+					<th>
+						<span class="sort" name="price">本店价格</span>
+					</th>
+					<th>
+						<span class="sort" name="isMarketable">上架</span>
+					</th>
+					<th>
+						<span class="sort" name="isBest">精品</span>
+					</th>
+					<th>
+						<span class="sort" name="isNew">新品</span>
+					</th>
+					<th>
+						<span class="sort" name="isHot">热销</span>
+					</th>
+					<th>
+						<span class="sort" name="store">库存</span>
+					</th>
+					<th>
+						操作
+					</th>
+				</tr>
+				<%for(list in pager.list){%>
+					<tr>
+						<td>
+							<input type="checkbox" name="ids" value="${list.id}" />
+						</td>
+						<td>
+							<%if (strutil.length(list.name) <= 20){%>
+								<span title="${list.name}">${list.name}</span>
+							<%}else{%>
+								<span title="${list.name}">${strutil.subStringTo(list.name,0,19)}...</span>
+							<%}%>
+						</td>
+						<td>
+							${list.productSn!}
+						</td>
+						<td>
+							${list.productCategory.name!}
+						</td>
+						<td>
+							${list.price,numberFormat="##.##"}
+						</td>
+						<td>
+							<%if (list.isMarketable == true){%>
+								<img src="${base}/template/admin/images/list_true_icon.gif" />
+							<%}else{%>
+								<img src="${base}/template/admin/images/list_false_icon.gif" />
+							<%}%>
+						</td>
+						<td>
+							<%if (list.isBest == true){%>
+								<img src="${base}/template/admin/images/list_true_icon.gif" />
+							<%}else{%>
+								<img src="${base}/template/admin/images/list_false_icon.gif" />
+							<%}%>
+						</td>
+						<td>
+							<%if (list.isNew == true){%>
+								<img src="${base}/template/admin/images/list_true_icon.gif" />
+							<%}else{%>
+								<img src="${base}/template/admin/images/list_false_icon.gif" />
+							<%}%>
+						</td>
+						<td>
+							<%if (list.isHot == true){%>
+								<img src="${base}/template/admin/images/list_true_icon.gif" />
+							<%}else{%>
+								<img src="${base}/template/admin/images/list_false_icon.gif" />
+							<%}%>
+						</td>
+						<td>
+							<span title="被占用数: ${list.freezeStore!}">${list.store!"-"}<%if (isEmpty(list.isOutOfStock!)){%> <span class="red">[缺货]</span><%}%></span>
+						</td>
+						<td>
+							<a href="${base}/product/edit?id=${list.id}" title="编辑">[编辑]</a>
+							<%if (list.isMarketable == true){%>
+								<a href="${base}${list.htmlFilePath}" target="_blank" title="浏览">[浏览]</a>
+							<%}else{%>
+								<span title="未上架">[未上架]</span>
+							<%}%>
+						</td>
+					</tr>
+				<%}%>
+			</table>
+			<%if (pager.list.~size > 0){%>
+				<div class="pagerBar">
+					<input type="button" class="deleteButton" url="${base}/product/delete" value="删 除" disabled hidefocus="true" />
+					<% include("/admin/pager.html"){}%>
+				</div>
+			<%}else{%>
+				<div class="noRecord">
+					没有找到任何记录!
+				</div>
+			<%}%>
+		</form>
+	</div>
+</body>
+</html>

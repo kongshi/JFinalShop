@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>日志列表 - Powered By ${systemConfig.systemName}</title>
+<meta name="Author" content="JFinalShop Team" />
+<meta name="Copyright" content="JFinalShop" />
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<% include("/common/include.html"){}%>
+<link href="${base}/template/admin/css/list.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="${base}/template/admin/js/list.js"></script>
+</head>
+<body class="list">
+	<div class="body">
+		<div class="listBar">
+			<h1><span class="icon">&nbsp;</span>日志列表&nbsp;<span class="pageInfo">总记录数: ${pager.totalRow}(共${pager.totalPage}页)</span></h1>
+		</div>
+		<form id="listForm" action="${base}/log/list" method="post">
+			<div class="operateBar">
+				<label>查找:</label>
+				<select name="property">
+					<option value="operationName" <%if (property! == "operationName"){%>selected="selected" <%}%>>
+						操作名称
+					</option>
+					<option value="operator" <%if (property! == "operator"){%>selected="selected" <%}%>>
+						操作员用戶名
+					</option>
+				</select>
+				<label class="searchText"><input type="text" name="keyword" value="${keyword!}" /></label><input type="button" id="searchButton" class="searchButton" value="" />
+				<label>每页显示:</label>
+				<select name="pageSize" id="pageSize">
+					<option value="10" <%if (pager.pageSize == 10){%>selected="selected" <%}%>>
+						10
+					</option>
+					<option value="20" <%if (pager.pageSize == 20){%>selected="selected" <%}%>>
+						20
+					</option>
+					<option value="50" <%if (pager.pageSize == 50){%>selected="selected" <%}%>>
+						50
+					</option>
+					<option value="100" <%if (pager.pageSize == 100){%>selected="selected" <%}%>>
+						100
+					</option>
+				</select>
+			</div>
+			<table class="listTable">
+				<tr>
+					<th class="check">
+						<input type="checkbox" class="allCheck" />
+					</th>
+					<th>
+						<span class="sort" name="operationName">操作名称</span>
+					</th>
+					<th>
+						<span class="sort" name="operator">操作员;</span>
+					</th>
+					<th>
+						<span class="sort" name="ip">操作IP</span>
+					</th>
+					<th>
+						<span class="sort" name="info">日志信息</span>
+					</th>
+					<th>
+						<span class="sort" name="createDate">记录时间</span>
+					</th>
+				</tr>
+				<%for(list in pager.list){%>
+					<tr>
+						<td>
+							<input type="checkbox" name="ids" value="${list.id!}" />
+						</td>
+						<td>
+							${list.operationName}
+						</td>
+						<td>
+							${list.operator}
+						</td>
+						<td>
+							${list.ip}
+						</td>
+						<td>
+							${list.info}&nbsp;
+						</td>
+						<td>
+							<span title="${list.createDate,dateFormat="yyyy-MM-dd HH:mm:ss"}">${list.createDate,dateFormat="yyyy-MM-dd HH:mm:ss"}</span>
+						</td>
+					</tr>
+				<%}%>
+			</table>
+			<%if (pager.list.~size > 0){%>
+				<div class="pagerBar">
+					<input type="button" class="deleteButton" url="${base}/log/delete" value="删 除" disabled hidefocus="true" />
+					<% include("/admin/pager.html"){}%>
+				</div>
+			<%}else{%>
+				<div class="noRecord">
+					没有找到任何记录!
+				</div>
+			<%}%>
+		</form>
+	</div>
+</body>
+</html>

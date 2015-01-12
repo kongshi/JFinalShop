@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>添加/编辑导航 - Powered By ${systemConfig.systemName}</title>
+<meta name="Author" content="JFinalShop Team" />
+<meta name="Copyright" content="JFinalShop" />
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<% include("/common/include.html"){}%>
+<link href="${base}/template/admin/css/input.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+
+$(document).ready( function() {
+
+	// 将选择的系统内容地址填充至链接地址中,若名称为空,则自动将名称填充至名称输入框.
+	$name = $("#name");
+	$systemUrl = $("#systemUrl");
+	$url = $("#url");
+	$systemUrl.change( function() {
+		var url = $systemUrl.val();
+		$url.val(url);
+		if($name.val() == "") {
+			var systemUrlSelectedText = $("$systemUrl:selected").get(0).text;
+			systemUrlSelectedText = systemUrlSelectedText.replace(/^-*\s*/g,"");
+			$name.val(systemUrlSelectedText);
+		}
+	});
+	
+	// 链接地址内容修改时，系统内容选择框修改为不选择任何项目
+	$url.keypress( function() {
+		$systemUrl.val("");
+	});
+
+})
+</script>
+<%
+var isAdd = false;
+var isEdit = false;
+
+if(isEmpty(navigation.id)){
+	isAdd = true;
+}else{	
+	isEdit = true;
+}%>
+</head>
+<body class="input">
+	<div class="body">
+		<div class="inputBar">
+			<h1><span class="icon">&nbsp;</span><%if(isAdd){%>添加导航<%}else{%>编辑导航<%}%></h1>
+		</div>
+		<form id="inputForm" class="validate" action="<%if (isAdd){%>${base}/navigation/save<%}else{%>${base}/navigation/update<%}%>" method="post">
+			<input type="hidden" name="navigation.id" value="${navigation.id!}" />
+			<table class="inputTable">
+				<tr>
+					<th>
+						名称:
+					</th>
+					<td>
+						<input type="text" id="name" name="navigation.name" class="formText {required: true}" value="${navigation.name!}" />	 
+						<label class="requireField">*</label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						系统内容:
+					</th>
+					<td>
+						<select id="systemUrl">
+							<option value="">-----</option>
+							<%for(list in articleCategoryTreeList){%>
+								<option value="/shop/article/list?id=${list.id}"<%if (("/shop/article/list?id=" + list.id) == navigation.url!){%> selected <%}%>>
+									<%if (list.level != 0){%>
+										<%for( i in range(0,list.level)){%>&nbsp;&nbsp;&nbsp;&nbsp;<%}%>
+									<%}%>
+								${list.name}
+								</option>
+							<%}%>
+							<option value="">-----</option>
+							<%for(list in productCategoryTreeList){%>
+								<option value="/shop/product/list?id=${list.id}"<%if (("/shop/product/list?id=" + list.id) == navigation.url!){%> selected <%}%>>
+									<%if (list.level != 0){%>
+										<%for( i in range(0,list.level)){%>&nbsp;&nbsp;&nbsp;&nbsp;<%}%>
+									<%}%>
+									${list.name}
+								</option>
+							<<%}%>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						链接地址:
+					</th>
+					<td>
+						<input type="text" id="url" name="navigation.url" class="formText {required: true}" value="${navigation.url!}" />
+						<label class="requireField">*</label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						位置:
+					</th>
+					<td>
+						<select name="position">
+							<option value="top" <%if (navigation.position! == "top"){%>selected="selected" <%}%>>
+								${i18n("Position.top")}	
+							</option>
+							<option value="middle" <%if (isAdd || navigation.position == "middle"){%>selected="selected" <%}%>>
+								${i18n("Position.middle")}	
+							</option>
+							<option value="bottom" <%if (navigation.position! == "bottom"){%>selected="selected" <%}%>>
+								${i18n("Position.bottom")}	
+							</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						是否显示:
+					</th>
+					<td>
+						<label><input type="radio" name="navigation.isVisible" value="true"<%if (isAdd || navigation.isVisible == true){%> checked<%}%> />是</label>
+						<label><input type="radio" name="navigation.isVisible" value="false"<%if (navigation.isVisible! == false){%> checked<%}%> />否</label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						是否在新窗口中打开:
+					</th>
+					<td>
+						<label><input type="radio" name="navigation.isBlankTarget" value="true"<%if (navigation.isBlankTarget! == true){%> checked<%}%> />是</label>
+						<label><input type="radio" name="navigation.isBlankTarget" value="false"<%if (isAdd || navigation.isBlankTarget == false){%> checked<%}%> />否</label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						排序:
+					</th>
+					<td>
+						<input type="text" name="navigation.orderList" class="formText {digits: true, required: true}" value="${navigation.orderList!50}" title="只允许输入零或正整数" />
+						<label class="requireField">*</label>
+					</td>
+				</tr>
+			</table>
+			<div class="buttonArea">
+				<input type="submit" class="formButton" value="确  定" hidefocus="true" />&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="button" class="formButton" onclick="window.history.back(); return false;" value="返  回" hidefocus="true" />
+			</div>
+		</form>
+	</div>
+</body>
+</html>
